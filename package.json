@@ -6,15 +6,18 @@
   "scripts": {
     "build": "npm run compile && npm run bundle && npm run copy-metadata",
     "compile": "tsc --noEmit",
-    "bundle": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --minify",
+    "bundle": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --minify --external:gi://*",
     "copy-metadata": "mkdir -p dist && cp metadata.json dist/",
-    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --watch",
+    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --watch --external:gi://*",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "devDependencies": {
+    "@girs/gio-2.0": "^2.86.0-4.0.0-beta.38",
     "@girs/gjs": "^4.0.0-beta.38",
+    "@girs/glib-2.0": "^2.86.0-4.0.0-beta.38",
     "@girs/gnome-shell": "^49.1.0",
+    "@girs/meta-17": "^17.0.0-4.0.0-beta.38",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "esbuild": "^0.20.0",

@@ -1,7 +1,6 @@
-import GLib from 'gi://GLib';
-import Gio from 'gi://Gio';
-import Meta from 'gi://Meta';
-import Shell from 'gi://Shell';
+import Gio from '@girs/gio-2.0';
+import GLib from '@girs/glib-2.0';
+import Meta from '@girs/meta-17';
 
 const WINDOW_COMMANDS_IFACE = `
 <node>
@@ -13,17 +12,42 @@ const WINDOW_COMMANDS_IFACE = `
 </node>`;
 
 class WindowCommandsDBus {
-    private _dbusImpl: Gio.DBusExportedObject;
+    private _dbusConnection: Gio.DBusConnection;
+    private _registrationId: number | null = null;
     private _ownerId: number | null = null;
 
     constructor() {
+        this._dbusConnection = Gio.DBus.session;
+
         const nodeInfo = Gio.DBusNodeInfo.new_for_xml(WINDOW_COMMANDS_IFACE);
-        const ifaceInfo = nodeInfo.interfaces[0];
+        const ifaceInfo = nodeInfo.lookup_interface('com.jasonplein.WindowCommands');
 
-        this._dbusImpl = Gio.DBusExportedObject.wrapJSObject(ifaceInfo, this);
-        this._dbusImpl.export(Gio.DBus.session, '/com/jasonplein/WindowCommands');
+        if (!ifaceInfo) {
+            throw new Error('Failed to lookup DBus interface');
+        }
 
-        this._ownerId = Gio.DBus.session.own_name(
+        this._registrationId = this._dbusConnection.register_object(
+            '/com/jasonplein/WindowCommands',
+            ifaceInfo,
+            (
+                _connection: Gio.DBusConnection,
+                _sender: string,
+                _objectPath: string,
+                _interfaceName: string,
+                methodName: string,
+                _parameters: unknown,
+                invocation: Gio.DBusMethodInvocation
+            ) => {
+                if (methodName === 'CenterTwoThirds') {
+                    const result = this.centerTwoThirds();
+                    invocation.return_value(GLib.Variant.new('(b)', [result]));
+                }
+            },
+            null,
+            null
+        );
+
+        this._ownerId = this._dbusConnection.own_name(
             'com.jasonplein.WindowCommands',
             Gio.BusNameOwnerFlags.NONE,
             null,
@@ -31,7 +55,7 @@ class WindowCommandsDBus {
         );
     }
 
-    CenterTwoThirds(): boolean {
+    centerTwoThirds(): boolean {
         try {
             const display = global.display;
             const window = display.focus_window;
@@ -41,7 +65,6 @@ class WindowCommandsDBus {
                 return false;
             }
 
-            const monitor = display.get_monitor_geometry(window.get_monitor());
             const workArea = window.get_work_area_current_monitor();
 
             // Calculate 2/3 width
@@ -53,8 +76,8 @@ class WindowCommandsDBus {
             const newY = workArea.y;
 
             // Unmaximize if needed
-            if (window.get_maximized()) {
-                window.unmaximize(Meta.MaximizeFlags.BOTH);
+            if (window.is_maximized()) {
+                window.unmaximize();
             }
 
             // Move and resize
@@ -70,10 +93,13 @@ class WindowCommandsDBus {
 
     destroy() {
         if (this._ownerId) {
-            Gio.DBus.session.unown_name(this._ownerId);
+            this._dbusConnection.unown_name(this._ownerId);
             this._ownerId = null;
         }
-        this._dbusImpl.unexport();
+        if (this._registrationId) {
+            this._dbusConnection.unregister_object(this._registrationId);
+            this._registrationId = null;
+        }
     }
 }
 
