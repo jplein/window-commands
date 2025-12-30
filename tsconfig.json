@@ -16,10 +16,7 @@
     "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "resource:///org/gnome/*": ["./types/gnome-shell/*"]
-    }
+    "baseUrl": "."
   },
   "include": [
     "src/**/*"

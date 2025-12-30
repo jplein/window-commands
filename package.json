@@ -4,14 +4,17 @@
   "description": "A GNOME extension written in TypeScript",
   "type": "module",
   "scripts": {
-    "build": "npm run compile && npm run bundle",
+    "build": "npm run compile && npm run bundle && npm run copy-metadata",
     "compile": "tsc --noEmit",
     "bundle": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --minify",
+    "copy-metadata": "mkdir -p dist && cp metadata.json dist/",
     "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --watch",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "devDependencies": {
+    "@girs/gjs": "^4.0.0",
+    "@girs/gnome-shell": "^47.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "esbuild": "^0.20.0",

@@ -1,0 +1,12 @@
+{
+  "uuid": "window-commands@jasonplein.com",
+  "name": "Window Commands",
+  "description": "D-Bus interface for window management commands",
+  "shell-version": [
+    "45",
+    "46",
+    "47"
+  ],
+  "version": 1,
+  "url": "https://github.com/jplein/window-commands"
+}
