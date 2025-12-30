@@ -1,6 +1,6 @@
-import Gio from '@girs/gio-2.0';
-import GLib from '@girs/glib-2.0';
-import Meta from '@girs/meta-17';
+import Gio from 'gi://Gio?version=2.0';
+import GLib from 'gi://GLib?version=2.0';
+import Meta from 'gi://Meta?version=17';
 
 const WINDOW_COMMANDS_IFACE = `
 <node>
@@ -103,17 +103,20 @@ class WindowCommandsDBus {
     }
 }
 
-let windowCommandsDBus: WindowCommandsDBus | null = null;
+// GNOME Shell 45+ requires a default export of a class with enable/disable methods
+export default class WindowCommandsExtension {
+    private _dbus: WindowCommandsDBus | null = null;
 
-export function enable() {
-    console.log('Enabling Window Commands extension');
-    windowCommandsDBus = new WindowCommandsDBus();
-}
+    enable() {
+        console.log('Enabling Window Commands extension');
+        this._dbus = new WindowCommandsDBus();
+    }
 
-export function disable() {
-    console.log('Disabling Window Commands extension');
-    if (windowCommandsDBus) {
-        windowCommandsDBus.destroy();
-        windowCommandsDBus = null;
+    disable() {
+        console.log('Disabling Window Commands extension');
+        if (this._dbus) {
+            this._dbus.destroy();
+            this._dbus = null;
+        }
     }
 }

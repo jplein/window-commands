@@ -15,7 +15,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
+    "declaration": false,
     "baseUrl": "."
   },
   "include": [

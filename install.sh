@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Install script for window-commands GNOME extension
 
 EXTENSION_DIR="$HOME/.local/share/gnome-shell/extensions/window-commands@jasonplein.com"

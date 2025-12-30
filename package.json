@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "npm run compile && npm run bundle && npm run copy-metadata",
-    "compile": "tsc --noEmit",
-    "bundle": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --minify --external:gi://*",
+    "compile": "echo 'Type checking done during build'",
+    "bundle": "tsc --outDir dist && mv dist/src/* dist/ && rmdir dist/src",
     "copy-metadata": "mkdir -p dist && cp metadata.json dist/",
-    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --watch --external:gi://*",
+    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --watch --external:gi://* --external:resource://*",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
