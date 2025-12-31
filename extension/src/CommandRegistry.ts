@@ -1,4 +1,5 @@
 import { Command } from './commands/Command.js';
+import { CenterTwoThirdsCommand } from './commands/CenterTwoThirdsCommand.js';
 
 /**
  * Registry for all window management commands
@@ -8,6 +9,19 @@ export class CommandRegistry {
 
     constructor() {
         this._commands = new Map();
+    }
+
+    /**
+     * Create a registry with all available commands pre-registered
+     */
+    static createDefault(): CommandRegistry {
+        const registry = new CommandRegistry();
+
+        // Register all commands here
+        registry.register(new CenterTwoThirdsCommand());
+        // Add more commands here as needed
+
+        return registry;
     }
 
     /**

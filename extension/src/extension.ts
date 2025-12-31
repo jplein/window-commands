@@ -1,7 +1,6 @@
 import Gio from 'gi://Gio?version=2.0';
 import GLib from 'gi://GLib?version=2.0';
 import { CommandRegistry } from './CommandRegistry.js';
-import { CenterTwoThirdsCommand } from './commands/CenterTwoThirdsCommand.js';
 
 class WindowCommandsDBus {
     private _dbusConnection: Gio.DBusConnection;
@@ -87,10 +86,8 @@ export default class WindowCommandsExtension {
     enable() {
         console.log('Enabling Window Commands extension');
 
-        // Create registry and register all commands
-        this._registry = new CommandRegistry();
-        this._registry.register(new CenterTwoThirdsCommand());
-        // Add more commands here as needed
+        // Create registry with all commands
+        this._registry = CommandRegistry.createDefault();
 
         this._dbus = new WindowCommandsDBus(this._registry);
     }
