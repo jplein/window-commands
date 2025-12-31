@@ -1,25 +1,33 @@
 import Gio from 'gi://Gio?version=2.0';
 import GLib from 'gi://GLib?version=2.0';
-import Meta from 'gi://Meta?version=17';
-
-const WINDOW_COMMANDS_IFACE = `
-<node>
-  <interface name="com.jasonplein.WindowCommands">
-    <method name="CenterTwoThirds">
-      <arg type="b" direction="out" name="success"/>
-    </method>
-  </interface>
-</node>`;
+import { CommandRegistry } from './CommandRegistry.js';
+import { CenterTwoThirdsCommand } from './commands/CenterTwoThirdsCommand.js';
 
 class WindowCommandsDBus {
     private _dbusConnection: Gio.DBusConnection;
     private _registrationId: number | null = null;
     private _ownerId: number | null = null;
+    private _registry: CommandRegistry;
 
-    constructor() {
+    constructor(registry: CommandRegistry) {
         this._dbusConnection = Gio.DBus.session;
+        this._registry = registry;
 
-        const nodeInfo = Gio.DBusNodeInfo.new_for_xml(WINDOW_COMMANDS_IFACE);
+        // Build DBus interface XML from registered commands
+        const methods = this._registry.getNames()
+            .map(name => `    <method name="${name}">
+      <arg type="b" direction="out" name="success"/>
+    </method>`)
+            .join('\n');
+
+        const dbusInterface = `
+<node>
+  <interface name="com.jasonplein.WindowCommands">
+${methods}
+  </interface>
+</node>`;
+
+        const nodeInfo = Gio.DBusNodeInfo.new_for_xml(dbusInterface);
         const ifaceInfo = nodeInfo.lookup_interface('com.jasonplein.WindowCommands');
 
         if (!ifaceInfo) {
@@ -38,9 +46,13 @@ class WindowCommandsDBus {
                 _parameters: unknown,
                 invocation: Gio.DBusMethodInvocation
             ) => {
-                if (methodName === 'CenterTwoThirds') {
-                    const result = this.centerTwoThirds();
+                const command = this._registry.get(methodName);
+                if (command) {
+                    const result = command.handle();
                     invocation.return_value(GLib.Variant.new('(b)', [result]));
+                } else {
+                    console.error(`Unknown method: ${methodName}`);
+                    invocation.return_value(GLib.Variant.new('(b)', [false]));
                 }
             },
             null,
@@ -53,42 +65,6 @@ class WindowCommandsDBus {
             null,
             null
         );
-    }
-
-    centerTwoThirds(): boolean {
-        try {
-            const display = global.display;
-            const window = display.focus_window;
-
-            if (!window || window.window_type !== Meta.WindowType.NORMAL) {
-                console.log('No valid window to resize');
-                return false;
-            }
-
-            const workArea = window.get_work_area_current_monitor();
-
-            // Calculate 2/3 width
-            const newWidth = Math.floor(workArea.width * 2 / 3);
-            const newHeight = workArea.height;
-
-            // Center horizontally
-            const newX = workArea.x + Math.floor((workArea.width - newWidth) / 2);
-            const newY = workArea.y;
-
-            // Unmaximize if needed
-            if (window.is_maximized()) {
-                window.unmaximize();
-            }
-
-            // Move and resize
-            window.move_resize_frame(true, newX, newY, newWidth, newHeight);
-
-            console.log(`Resized window to 2/3 width: ${newWidth}x${newHeight} at (${newX}, ${newY})`);
-            return true;
-        } catch (error) {
-            console.error('Error in CenterTwoThirds:', error);
-            return false;
-        }
     }
 
     destroy() {
@@ -106,10 +82,17 @@ class WindowCommandsDBus {
 // GNOME Shell 45+ requires a default export of a class with enable/disable methods
 export default class WindowCommandsExtension {
     private _dbus: WindowCommandsDBus | null = null;
+    private _registry: CommandRegistry | null = null;
 
     enable() {
         console.log('Enabling Window Commands extension');
-        this._dbus = new WindowCommandsDBus();
+
+        // Create registry and register all commands
+        this._registry = new CommandRegistry();
+        this._registry.register(new CenterTwoThirdsCommand());
+        // Add more commands here as needed
+
+        this._dbus = new WindowCommandsDBus(this._registry);
     }
 
     disable() {

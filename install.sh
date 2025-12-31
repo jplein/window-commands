@@ -6,10 +6,13 @@ EXTENSION_DIR="$HOME/.local/share/gnome-shell/extensions/window-commands@jasonpl
 # Build the extension
 npm run build
 
+# Remove old installation
+rm -rf "$EXTENSION_DIR"
+
 # Create extension directory
 mkdir -p "$EXTENSION_DIR"
 
-# Copy files
+# Copy extension files
 cp dist/extension.js "$EXTENSION_DIR/"
 cp dist/metadata.json "$EXTENSION_DIR/"
 
