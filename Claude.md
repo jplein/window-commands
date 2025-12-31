@@ -13,9 +13,7 @@
 - extension.ts is the entry point for the GNOME extension
 - cli.ts is the entry point for the command-line tool
 
-The extension is run by GNOME, and cannot expect the Node standard library to exist. The command-line tool is run by Node, and cannot expect the GNOME extension library to exist.
-
-So the extension should not import the Node standard library, and the command-line tool should not import the GNOME library.
+The extension is run by GNOME, and cannot expect the Node standard library to exist. So the extension should not import the Node standard library.
 
  # Workflow
 
