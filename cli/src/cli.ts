@@ -3,7 +3,7 @@ import { promisify } from 'node:util';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import { getCommandNames } from './commandMetadata.js';
+import { getCommandNames } from 'window-commands-extension/commandMetadata';
 
 const execAsync = promisify(exec);
 

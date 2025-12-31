@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "A GNOME extension and CLI for window management commands",
   "type": "module",
+  "workspaces": [
+    "extension",
+    "cli"
+  ],
   "scripts": {
-    "install": "npm install --prefix extension && npm install --prefix cli",
-    "build": "npm run build:extension && npm run copy-metadata-to-cli && npm run build:cli && npm run copy-outputs",
-    "build:extension": "cd extension && npm run build",
-    "copy-metadata-to-cli": "cp extension/dist/commandMetadata.js cli/src/ && cp extension/dist/commandMetadata.d.ts cli/src/",
-    "build:cli": "cd cli && npm run build",
+    "build": "npm run build -w extension && npm run build -w cli && npm run copy-outputs",
     "copy-outputs": "mkdir -p dist && cp extension/dist/extension.js dist/ && cp cli/dist/cli.js dist/ && chmod +x dist/cli.js && cp metadata.json dist/",
-    "lint": "npm run lint:extension && npm run lint:cli",
-    "lint:extension": "cd extension && npm run lint",
-    "lint:cli": "cd cli && npm run lint",
+    "lint": "npm run lint --workspaces",
     "clean": "rm -rf dist extension/dist cli/dist extension/node_modules cli/node_modules node_modules"
   },
   "devDependencies": {}

@@ -3,10 +3,27 @@
   "version": "1.0.0",
   "description": "GNOME Shell extension for window management commands",
   "type": "module",
+  "main": "./dist/extension.js",
+  "types": "./dist/extension.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/extension.d.ts",
+      "default": "./dist/extension.js"
+    },
+    "./CommandRegistry": {
+      "types": "./dist/CommandRegistry.d.ts",
+      "default": "./dist/CommandRegistry.js"
+    },
+    "./commandMetadata": {
+      "types": "./dist/commandMetadata.d.ts",
+      "default": "./dist/commandMetadata.js"
+    }
+  },
   "scripts": {
-    "build": "npm run build:extension && npm run build:metadata",
+    "build": "npm run build:extension && npm run build:metadata && npm run build:types",
+    "build:metadata": "esbuild src/commandMetadata.ts --bundle --outfile=dist/commandMetadata.js --format=esm --target=es2022",
     "build:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --external:gi://* --external:resource://*",
-    "build:metadata": "tsc src/commandMetadata.ts --outDir dist --declaration --emitDeclarationOnly --skipLibCheck && esbuild src/commandMetadata.ts --bundle --outfile=dist/commandMetadata.js --format=esm --target=es2022",
+    "build:types": "tsc --project tsconfig.json --declaration --emitDeclarationOnly",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },

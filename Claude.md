@@ -20,7 +20,7 @@ The extension runs in GNOME Shell and cannot use Node.js APIs.
 ## cli/ - Command-Line Tool
 - **cli.ts**: Node.js CLI for executing commands via DBus and generating .desktop files
 
-The CLI runs in Node.js and cannot use GNOME Shell APIs.
+The CLI runs in Node.js and does not use GNOME Shell APIs.
 
 ## Output Targets
 
