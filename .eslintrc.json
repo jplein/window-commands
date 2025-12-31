@@ -2,8 +2,7 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2022,
-    "sourceType": "module",
-    "project": "./tsconfig.json"
+    "sourceType": "module"
   },
   "plugins": [
     "@typescript-eslint"
@@ -33,5 +32,26 @@
     "dist",
     "node_modules",
     "*.js"
+  ],
+  "overrides": [
+    {
+      "files": ["src/extension.ts", "src/global.d.ts"],
+      "parserOptions": {
+        "project": "./tsconfig.extension.json"
+      },
+      "env": {
+        "browser": false,
+        "node": false
+      }
+    },
+    {
+      "files": ["src/cli.ts"],
+      "parserOptions": {
+        "project": "./tsconfig.cli.json"
+      },
+      "env": {
+        "node": true
+      }
+    }
   ]
 }
