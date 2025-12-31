@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "install": "npm install --prefix extension && npm install --prefix cli",
-    "build": "npm run build:extension && npm run build:cli && npm run copy-outputs",
+    "build": "npm run build:extension && npm run copy-metadata-to-cli && npm run build:cli && npm run copy-outputs",
     "build:extension": "cd extension && npm run build",
+    "copy-metadata-to-cli": "cp extension/dist/commandMetadata.js cli/src/ && cp extension/dist/commandMetadata.d.ts cli/src/",
     "build:cli": "cd cli && npm run build",
     "copy-outputs": "mkdir -p dist && cp extension/dist/extension.js dist/ && cp cli/dist/cli.js dist/ && chmod +x dist/cli.js && cp metadata.json dist/",
     "lint": "npm run lint:extension && npm run lint:cli",

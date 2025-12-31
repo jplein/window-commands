@@ -4,7 +4,9 @@
   "description": "GNOME Shell extension for window management commands",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --external:gi://* --external:resource://*",
+    "build": "npm run build:extension && npm run build:metadata",
+    "build:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --external:gi://* --external:resource://*",
+    "build:metadata": "tsc src/commandMetadata.ts --outDir dist --declaration --emitDeclarationOnly --skipLibCheck && esbuild src/commandMetadata.ts --bundle --outfile=dist/commandMetadata.js --format=esm --target=es2022",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },

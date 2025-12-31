@@ -1,15 +1,14 @@
-#!/usr/bin/env node
-
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
+import { getCommandNames } from './commandMetadata.js';
 
 const execAsync = promisify(exec);
 
-// Hard-coded list of commands - must match what's registered in extension
-const COMMANDS = ['CenterTwoThirds'];
+// Get command list from the extension's metadata
+const COMMANDS = getCommandNames();
 
 /**
  * Convert a DBus method name to kebab-case (e.g., CenterTwoThirds -> center-two-thirds)

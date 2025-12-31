@@ -29,13 +29,27 @@ The CLI runs in Node.js and cannot use GNOME Shell APIs.
 
 # Adding New Commands
 
-1. Create a new command class in `extension/src/commands/`:
+1. Add the command metadata to `extension/src/commandMetadata.ts`:
+```typescript
+export const COMMANDS_METADATA: CommandMetadata[] = [
+    {
+        name: 'CenterTwoThirds',
+        description: 'Center window and resize to 2/3 screen width',
+    },
+    {
+        name: 'MyMethodName',
+        description: 'Description of what it does',
+    },
+];
+```
+
+2. Create the command implementation in `extension/src/commands/`:
 ```typescript
 import { Command } from './Command.js';
 
 export class MyCommand implements Command {
     name(): string {
-        return 'MyMethodName'; // DBus method name
+        return 'MyMethodName';
     }
 
     handle(): boolean {
@@ -45,15 +59,14 @@ export class MyCommand implements Command {
 }
 ```
 
-2. Register it in `extension/src/extension.ts`:
+3. Register it in `extension/src/CommandRegistry.ts` in the `createDefault()` method:
 ```typescript
-this._registry.register(new MyCommand());
+case 'MyMethodName':
+    registry.register(new MyCommand());
+    break;
 ```
 
-3. Add the command name to the `COMMANDS` array in `cli/src/cli.ts`:
-```typescript
-const COMMANDS = ['CenterTwoThirds', 'MyMethodName'];
-```
+The CLI will automatically pick up the new command from the metadata - no changes needed in the CLI code!
 
 # Workflow
 
