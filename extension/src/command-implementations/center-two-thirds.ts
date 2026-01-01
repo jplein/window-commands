@@ -24,6 +24,11 @@ export class CenterTwoThirdsCommand implements CommandImplementation {
       const newX = workArea.x + Math.floor((workArea.width - newWidth) / 2);
       const newY = workArea.y;
 
+      // Unfullscreen if needed
+      if (window.is_fullscreen()) {
+        window.unmake_fullscreen();
+      }
+
       // Unmaximize if needed
       if (window.is_maximized()) {
         window.unmaximize();
