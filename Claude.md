@@ -29,44 +29,48 @@ The CLI runs in Node.js and does not use GNOME Shell APIs.
 
 # Adding New Commands
 
-1. Add the command metadata to `extension/src/commandMetadata.ts`:
+1. Add a metadata class for the new command under `common/src/commands`:
 ```typescript
-export const COMMANDS_METADATA: CommandMetadata[] = [
-    {
-        name: 'CenterTwoThirds',
-        description: 'Center window and resize to 2/3 screen width',
-    },
-    {
-        name: 'MyMethodName',
-        description: 'Description of what it does',
-    },
-];
+import { Command } from "../command.js";
+
+export class YourCommandHere implements Command {
+  public name = "YourCommandHere";
+
+  public description =
+    "This is what your command does";
+}
 ```
 
-2. Create the command implementation in `extension/src/commands/`:
+2. Import your class and add it to the common command registry in the `init()` function in `common/src/common.ts`:
+
+```typescript
+function init(reg: CommandRegistry): void {
+  reg.add(new CommandCenterTwoThirds());
+  reg.add(new YourCommandHere()); // your new command
+}
+```
+
+3. Create the command implementation in `extension/src/commands/`:
 ```typescript
 import { Command } from './Command.js';
 
 export class MyCommand implements Command {
-    name(): string {
-        return 'MyMethodName';
-    }
+    public name: string 'YourCommandHere'; // This must match the name field  of the metadata class
 
-    handle(): boolean {
+    impl(): boolean {
         // Implementation
         return true;
     }
 }
 ```
 
-3. Register it in `extension/src/CommandRegistry.ts` in the `createDefault()` method:
+4. Import and register your implementation class in the `init()` function in `extension/src/command-implementation.ts`:
 ```typescript
-case 'MyMethodName':
-    registry.register(new MyCommand());
-    break;
+function init(implRegistry: CommandImplementationRegistry): void {
+  implRegistry.add(new CenterTwoThirdsCommand());
+  implRegistry.add(new YourCommandHere()); // Your new command
+}
 ```
-
-The CLI will automatically pick up the new command from the metadata - no changes needed in the CLI code!
 
 # Workflow
 
