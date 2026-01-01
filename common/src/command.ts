@@ -3,8 +3,8 @@ export interface Command {
   // unique.
   name: string;
 
-  // A description of the command. This will appear in the .desktop file's
-  // Name entry.
+  // A description of the command. This is the help string in the command-line
+  // tools '--list' output.
   description: string;
 
   // The command's implementation, to be filled in by the extension

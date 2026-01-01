@@ -33,7 +33,7 @@ async function executeCommand(command: Command): Promise<boolean> {
 function generateDesktopFile(command: Command, targetDir: string): void {
   mkdirSync(targetDir, { recursive: true });
 
-  const { name, description } = command;
+  const { name } = command;
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
@@ -41,7 +41,7 @@ function generateDesktopFile(command: Command, targetDir: string): void {
 
   const desktopContent = `[Desktop Entry]
 Type=Application
-Name=${description}
+Name=${name}
 Exec=node ${cliPath} ${name}
 Terminal=false
 Categories=Utility;
@@ -64,9 +64,7 @@ function generateAllDesktopFiles(commands: Command[], targetDir: string): void {
   }
 
   console.log(`Done! Desktop files created in ${targetDir}`);
-  console.log(
-    `You may need to run: update-desktop-database ${targetDir}`,
-  );
+  console.log(`You may need to run: update-desktop-database ${targetDir}`);
 }
 
 /**
