@@ -39,7 +39,33 @@ Log out and log back in to GNOME for the extension to load.
 
 ### Nix/NixOS Installation
 
-See [nix.md](nix.md) for detailed instructions on installing with home-manager or NixOS configuration.
+#### With Flakes (Recommended)
+
+Add to your flake inputs:
+```nix
+inputs.window-commands = {
+  url = "github:jplein/window-commands/jplein/nix";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+Then import the home-manager module:
+```nix
+imports = [ inputs.window-commands.homeManagerModules.default ];
+programs.window-commands.enable = true;
+```
+
+#### Without Flakes
+
+Use the standalone home-manager module:
+```nix
+imports = [ /path/to/window-commands/home-manager-module.nix ];
+programs.window-commands.enable = true;
+```
+
+See [nix.md](nix.md) for detailed instructions and configuration examples.
+
+This installs the GNOME extension, CLI tool (`jplein-window-commands`), and .desktop files automatically.
 
 ## Usage
 
