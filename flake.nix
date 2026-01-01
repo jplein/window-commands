@@ -105,14 +105,11 @@
             };
 
             # Install desktop files
-            xdg.dataFile = lib.listToAttrs (
-              map (desktop: {
-                name = "applications/${baseNameOf desktop}";
-                value = {
-                  source = desktop;
-                };
-              }) (lib.filesystem.listFilesRecursive "${window-commands-pkg}/share/applications")
-            );
+            # Copy the entire applications directory to avoid store path references in attribute names
+            home.file.".local/share/applications" = {
+              source = "${window-commands-pkg}/share/applications";
+              recursive = true;
+            };
           };
         };
 

@@ -78,13 +78,10 @@ in {
     };
 
     # Install desktop files
-    xdg.dataFile = lib.listToAttrs (
-      map (desktop: {
-        name = "applications/${baseNameOf desktop}";
-        value = {
-          source = desktop;
-        };
-      }) (lib.filesystem.listFilesRecursive "${cfg.package}/share/applications")
-    );
+    # Copy the entire applications directory to avoid store path references in attribute names
+    home.file.".local/share/applications" = {
+      source = "${cfg.package}/share/applications";
+      recursive = true;
+    };
   };
 }
