@@ -47,7 +47,7 @@
             # We want: Exec=/nix/store/.../bin/jplein-window-commands CommandName
             for desktop_file in $out/share/applications/window-commands-*.desktop; do
               if [ -f "$desktop_file" ]; then
-                sed -i "s|^Exec=node .*/jplein-window-commands|Exec=$out/bin/jplein-window-commands|g" "$desktop_file"
+                sed -i "s|^Exec=node .*/cli\.js|Exec=$out/bin/jplein-window-commands|g" "$desktop_file"
               fi
             done
 
