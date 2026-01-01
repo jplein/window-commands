@@ -1,6 +1,6 @@
-import { Command } from "./commands/Command.js";
-import { CenterTwoThirdsCommand } from "./commands/CenterTwoThirdsCommand.js";
-import { COMMANDS_METADATA } from "./commandMetadata.js";
+import { Command } from "./commands/command.js";
+import { CenterTwoThirdsCommand } from "./commands/center-two-thirds.js";
+import { COMMANDS_METADATA } from "./command-metadata.js";
 
 /**
  * Registry for all window management commands

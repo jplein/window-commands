@@ -1,6 +1,6 @@
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-import { CommandRegistry } from "./CommandRegistry.js";
+import { CommandRegistry } from "./command-registry.js";
 
 class WindowCommandsDBus {
   private _dbusConnection: Gio.DBusConnection;
