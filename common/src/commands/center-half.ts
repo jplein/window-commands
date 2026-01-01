@@ -6,5 +6,7 @@ export class CommandCenterHalf implements Command {
   public description =
     "Position the window to occupy the center half of the screen";
 
+  public icon = "view-dual-symbolic";
+
   constructor() {}
 }

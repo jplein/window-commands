@@ -3,6 +3,9 @@ export interface Command {
   // unique.
   name: string;
 
+  // Optional: the icon for the .desktop file
+  icon?: string;
+
   // A description of the command. This is the help string in the command-line
   // tools '--list' output.
   description: string;

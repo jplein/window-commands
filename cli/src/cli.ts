@@ -33,20 +33,25 @@ async function executeCommand(command: Command): Promise<boolean> {
 function generateDesktopFile(command: Command, targetDir: string): void {
   mkdirSync(targetDir, { recursive: true });
 
-  const { name } = command;
+  const { name, icon } = command;
+
+  var iconLine = "";
+  if (icon) {
+    iconLine = `Icon=${icon}\n`;
+  }
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const cliPath = resolve(__dirname, "cli.js");
 
-  const desktopContent = `[Desktop Entry]
+  let desktopContent = `[Desktop Entry]
 Type=Application
 Name=${name}
 Exec=node ${cliPath} ${name}
 Terminal=false
 Categories=Utility;
 NoDisplay=false
-`;
+${iconLine}`;
 
   const desktopFilePath = join(targetDir, `window-commands-${name}.desktop`);
   writeFileSync(desktopFilePath, desktopContent);
