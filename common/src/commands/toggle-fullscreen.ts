@@ -5,5 +5,7 @@ export class CommandToggleFullscreen implements Command {
 
   public description = "Toggle fullscreen mode for the active window";
 
+  icon = "view-fullscreen-symbolic";
+
   constructor() {}
 }

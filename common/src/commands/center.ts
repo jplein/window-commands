@@ -5,5 +5,7 @@ export class CommandCenter implements Command {
 
   public description = "Center the window without resizing it";
 
+  icon = "focus-windows-symbolic";
+
   constructor() {}
 }

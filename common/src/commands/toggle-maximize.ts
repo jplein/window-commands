@@ -5,5 +5,7 @@ export class CommandToggleMaximize implements Command {
 
   public description = "Toggle maximize mode for the active window";
 
+  icon = "window-maximize-symbolic";
+
   constructor() {}
 }
