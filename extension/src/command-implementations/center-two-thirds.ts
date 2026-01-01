@@ -2,7 +2,7 @@ import Meta from "gi://Meta?version=17";
 import { CommandImplementation } from "../command-implementation.js";
 
 export class CenterTwoThirdsCommand implements CommandImplementation {
-  public name = "center-two-thirds";
+  public name = "CenterTwoThirds";
 
   impl(): boolean {
     try {

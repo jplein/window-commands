@@ -1,8 +1,8 @@
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import { writeFileSync, mkdirSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { homedir } from "node:os";
+import { join, resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { registry, CommandRegistry, Command } from "window-commands-common";
 
 const execAsync = promisify(exec);
@@ -30,12 +30,13 @@ async function executeCommand(command: Command): Promise<boolean> {
 /**
  * Generate a .desktop file for a command
  */
-function generateDesktopFile(command: Command): void {
-  const desktopDir = join(homedir(), ".local/share/applications");
-  mkdirSync(desktopDir, { recursive: true });
+function generateDesktopFile(command: Command, targetDir: string): void {
+  mkdirSync(targetDir, { recursive: true });
 
   const { name, description } = command;
 
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
   const cliPath = join(process.cwd(), resolve(__dirname, "../../dist/cli.js"));
 
   const desktopContent = `[Desktop Entry]
@@ -47,7 +48,7 @@ Categories=Utility;
 NoDisplay=false
 `;
 
-  const desktopFilePath = join(desktopDir, `window-commands-${name}.desktop`);
+  const desktopFilePath = join(targetDir, `window-commands-${name}.desktop`);
   writeFileSync(desktopFilePath, desktopContent);
   console.log(`Created desktop file: ${desktopFilePath}`);
 }
@@ -55,16 +56,16 @@ NoDisplay=false
 /**
  * Generate .desktop files for all commands
  */
-function generateAllDesktopFiles(commands: Command[]): void {
+function generateAllDesktopFiles(commands: Command[], targetDir: string): void {
   console.log(`Generating desktop files for ${commands.length} commands...`);
 
   for (const methodName of commands) {
-    generateDesktopFile(methodName);
+    generateDesktopFile(methodName, targetDir);
   }
 
-  console.log("Done! Desktop files created in ~/.local/share/applications/");
+  console.log(`Done! Desktop files created in ${targetDir}`);
   console.log(
-    "You may need to run: update-desktop-database ~/.local/share/applications/",
+    `You may need to run: update-desktop-database ${targetDir}`,
   );
 }
 
@@ -86,7 +87,7 @@ async function main() {
     console.log("  window-commands <command-name>          Execute a command");
     console.log("  window-commands --list                  List all commands");
     console.log(
-      "  window-commands --generate-desktop      Generate .desktop files",
+      "  window-commands --generate-desktop <dir> Generate .desktop files",
     );
     console.log("  window-commands --help                  Show this help");
     process.exit(0);
@@ -100,8 +101,14 @@ async function main() {
   }
 
   if (param === "--generate-desktop") {
+    const targetDir = args[1];
+    if (!targetDir) {
+      console.error("Error: --generate-desktop requires a directory path");
+      console.error("Usage: window-commands --generate-desktop <dir>");
+      process.exit(1);
+    }
     const commands = registry().list();
-    generateAllDesktopFiles(commands);
+    generateAllDesktopFiles(commands, resolve(targetDir));
     process.exit(0);
   }
 
