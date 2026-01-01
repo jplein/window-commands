@@ -39,6 +39,7 @@ export class CommandRegistry {
 
     // Must not exceed the maximum name length (255 characters)
     if (name.length > 255) {
+      
       throw new Error(`invalid command name "${name}": must not exceed 255 characters (length: ${name.length})`);
     }
 
