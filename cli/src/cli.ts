@@ -37,7 +37,7 @@ function generateDesktopFile(command: Command, targetDir: string): void {
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
-  const cliPath = join(process.cwd(), resolve(__dirname, "../../dist/cli.js"));
+  const cliPath = resolve(__dirname, "cli.js");
 
   const desktopContent = `[Desktop Entry]
 Type=Application
