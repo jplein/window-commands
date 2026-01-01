@@ -1,0 +1,23 @@
+{
+  "name": "window-commands-common",
+  "version": "1.0.0",
+  "description": "Common types for window-commands extension and CLI",
+  "type": "module",
+  "main": "./dist/common.js",
+  "types": "./dist/common.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/common.d.ts",
+      "default": "./dist/common.js"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:common && npm run build:types",
+    "build:types": "tsc --project tsconfig.json --declaration --emitDeclarationOnly",
+    "build:common": "esbuild src/common.ts --bundle --outfile=dist/common.js --format=esm --target=es2022",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
