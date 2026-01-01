@@ -1,6 +1,7 @@
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-import { CommandRegistry } from "./command-registry.js";
+import { registry, CommandRegistry } from "window-commands-common";
+import { implementations } from "./command-implementation.js";
 
 class WindowCommandsDBus {
   private _dbusConnection: Gio.DBusConnection;
@@ -14,9 +15,9 @@ class WindowCommandsDBus {
 
     // Build DBus interface XML from registered commands
     const methods = this._registry
-      .getNames()
+      .list()
       .map(
-        (name) => `    <method name="${name}">
+        (command) => `    <method name="${command.name}">
       <arg type="b" direction="out" name="success"/>
     </method>`,
       )
@@ -52,7 +53,13 @@ ${methods}
       ) => {
         const command = this._registry.get(methodName);
         if (command) {
-          const result = command.handle();
+          if (!command.impl) {
+            throw new Error(
+              `Error running command ${command.name}: Implementation not found`,
+            );
+          }
+
+          const result = command.impl();
           invocation.return_value(GLib.Variant.new("(b)", [result]));
         } else {
           console.error(`Unknown method: ${methodName}`);
@@ -86,15 +93,17 @@ ${methods}
 // GNOME Shell 45+ requires a default export of a class with enable/disable methods
 export default class WindowCommandsExtension {
   private _dbus: WindowCommandsDBus | null = null;
-  private _registry: CommandRegistry | null = null;
 
   enable() {
     console.log("Enabling Window Commands extension");
 
     // Create registry with all commands
-    this._registry = CommandRegistry.instance;
+    const commandRegistry = registry();
+    const impls = implementations();
 
-    this._dbus = new WindowCommandsDBus(this._registry);
+    impls.fill(commandRegistry);
+
+    this._dbus = new WindowCommandsDBus(commandRegistry);
   }
 
   disable() {
@@ -105,5 +114,3 @@ export default class WindowCommandsExtension {
     }
   }
 }
-
-export const registry = CommandRegistry.instance;

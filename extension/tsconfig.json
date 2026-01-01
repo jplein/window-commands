@@ -17,6 +17,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
+    "paths": {
+      "window-commands-common/*": ["../common/dist/*"]
+    },
     "types": []
   },
   "include": [

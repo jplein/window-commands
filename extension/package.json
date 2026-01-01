@@ -20,8 +20,7 @@
     }
   },
   "scripts": {
-    "build": "npm run build:extension && npm run build:metadata && npm run build:types",
-    "build:metadata": "esbuild src/command-metadata.ts --bundle --outfile=dist/command-metadata.js --format=esm --target=es2022",
+    "build": "npm run build:extension && npm run build:types",
     "build:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --format=esm --target=firefox102 --external:gi://* --external:resource://*",
     "build:types": "tsc --project tsconfig.json --declaration --emitDeclarationOnly",
     "lint": "eslint src --ext .ts",

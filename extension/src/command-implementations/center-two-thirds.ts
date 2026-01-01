@@ -1,12 +1,10 @@
 import Meta from "gi://Meta?version=17";
-import { Command } from "./command.js";
+import { CommandImplementation } from "../command-implementation.js";
 
-export class CenterTwoThirdsCommand implements Command {
-  name(): string {
-    return "CenterTwoThirds";
-  }
+export class CenterTwoThirdsCommand implements CommandImplementation {
+  public name = "center-two-thirds";
 
-  handle(): boolean {
+  impl(): boolean {
     try {
       const display = global.display;
       const window = display.focus_window;

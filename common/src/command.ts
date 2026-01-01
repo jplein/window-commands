@@ -8,5 +8,5 @@ export interface Command {
   description: string;
 
   // The command's implementation, to be filled in by the extension
-  impl?: () => void;
+  impl?: () => boolean;
 }
