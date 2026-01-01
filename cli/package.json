@@ -9,7 +9,7 @@
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "dependencies": {
-    "window-commands-extension": "*"
+    "window-commands-common": "*"
   },
   "devDependencies": {
     "@types/node": "^25.0.3"

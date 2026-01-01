@@ -1,6 +1,9 @@
 import { CommandRegistry } from "./command-registry.js";
 import { CommandCenterTwoThirds } from "./commands/center-two-thirds.js";
 
+export { Command } from "./command.js";
+export { CommandRegistry } from "./command-registry.js";
+
 function init(reg: CommandRegistry): void {
   reg.add(new CommandCenterTwoThirds());
 }

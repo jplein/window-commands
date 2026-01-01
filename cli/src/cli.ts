@@ -1,39 +1,18 @@
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import { writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { homedir } from "node:os";
-import { getCommandNames } from "window-commands-extension/command-metadata";
+import { registry, CommandRegistry, Command } from "window-commands-common";
 
 const execAsync = promisify(exec);
-
-// Get command list from the extension's metadata
-const COMMANDS = getCommandNames();
-
-/**
- * Convert a DBus method name to kebab-case (e.g., CenterTwoThirds -> center-two-thirds)
- */
-function toKebabCase(methodName: string): string {
-  return methodName
-    .replace(/([A-Z])/g, "-$1")
-    .toLowerCase()
-    .substring(1);
-}
-
-/**
- * Convert kebab-case to DBus method name (e.g., center-two-thirds -> CenterTwoThirds)
- */
-function toMethodName(commandName: string): string {
-  return commandName
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join("");
-}
 
 /**
  * Execute a window command via DBus
  */
-async function executeCommand(methodName: string): Promise<boolean> {
+async function executeCommand(command: Command): Promise<boolean> {
+  const methodName = command.name;
+
   try {
     const { stdout } = await execAsync(
       `gdbus call --session --dest com.jasonplein.WindowCommands --object-path /com/jasonplein/WindowCommands --method com.jasonplein.WindowCommands.${methodName}`,
@@ -51,27 +30,24 @@ async function executeCommand(methodName: string): Promise<boolean> {
 /**
  * Generate a .desktop file for a command
  */
-function generateDesktopFile(methodName: string): void {
+function generateDesktopFile(command: Command): void {
   const desktopDir = join(homedir(), ".local/share/applications");
   mkdirSync(desktopDir, { recursive: true });
 
-  const kebabName = toKebabCase(methodName);
-  const displayName = methodName.replace(/([A-Z])/g, " $1").trim();
-  const cliPath = join(process.cwd(), "cli/dist/cli.js");
+  const { name, description } = command;
+
+  const cliPath = join(process.cwd(), resolve(__dirname, "../../dist/cli.js"));
 
   const desktopContent = `[Desktop Entry]
 Type=Application
-Name=Window: ${displayName}
-Exec=node ${cliPath} ${kebabName}
+Name=${description}
+Exec=node ${cliPath} ${name}
 Terminal=false
 Categories=Utility;
 NoDisplay=false
 `;
 
-  const desktopFilePath = join(
-    desktopDir,
-    `window-commands-${kebabName}.desktop`,
-  );
+  const desktopFilePath = join(desktopDir, `window-commands-${name}.desktop`);
   writeFileSync(desktopFilePath, desktopContent);
   console.log(`Created desktop file: ${desktopFilePath}`);
 }
@@ -79,10 +55,10 @@ NoDisplay=false
 /**
  * Generate .desktop files for all commands
  */
-function generateAllDesktopFiles(): void {
-  console.log(`Generating desktop files for ${COMMANDS.length} commands...`);
+function generateAllDesktopFiles(commands: Command[]): void {
+  console.log(`Generating desktop files for ${commands.length} commands...`);
 
-  for (const methodName of COMMANDS) {
+  for (const methodName of commands) {
     generateDesktopFile(methodName);
   }
 
@@ -95,11 +71,10 @@ function generateAllDesktopFiles(): void {
 /**
  * List all available commands
  */
-function listCommands(): void {
+function listCommands(registry: CommandRegistry): void {
   console.log("Available commands:");
-  for (const methodName of COMMANDS) {
-    const kebabName = toKebabCase(methodName);
-    console.log(`  ${kebabName} (${methodName})`);
+  for (const command of registry.list()) {
+    console.log(`  ${command.name} (${command.description})`);
   }
 }
 
@@ -117,27 +92,28 @@ async function main() {
     process.exit(0);
   }
 
-  const command = args[0];
+  const param = args[0];
 
-  if (command === "--list") {
-    listCommands();
+  if (param === "--list") {
+    listCommands(registry());
     process.exit(0);
   }
 
-  if (command === "--generate-desktop") {
-    generateAllDesktopFiles();
+  if (param === "--generate-desktop") {
+    const commands = registry().list();
+    generateAllDesktopFiles(commands);
     process.exit(0);
   }
 
   // Execute the command
-  const methodName = toMethodName(command);
-  if (!COMMANDS.includes(methodName)) {
-    console.error(`Unknown command: ${command}`);
+  const command = registry().get(param);
+  if (!command) {
+    console.error(`Unknown command: ${param}`);
     console.error('Run "window-commands --list" to see available commands');
     process.exit(1);
   }
 
-  const success = await executeCommand(methodName);
+  const success = await executeCommand(command);
   process.exit(success ? 0 : 1);
 }
 

@@ -4,7 +4,7 @@ export class CommandCenterTwoThirds implements Command {
   public name = "center-two-thirds";
 
   public description =
-    "Set the width of the active window to two-thirds of the display, maximize height, and center it";
+    "Center active window and set width to 2/3 of the screen";
 
   constructor() {}
 }

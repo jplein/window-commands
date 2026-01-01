@@ -19,7 +19,7 @@
     "declaration": false,
     "baseUrl": ".",
     "paths": {
-      "window-commands-extension/*": ["../extension/dist/*"]
+      "window-commands-common/*": ["../common/dist/*"]
     },
     "types": ["node"]
   },
