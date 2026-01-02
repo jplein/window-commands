@@ -30,10 +30,8 @@ export class CenterCommand implements CommandImplementation {
         window.unmake_fullscreen();
       }
 
-      // Unmaximize if needed
-      if (window.is_maximized()) {
-        window.unmaximize();
-      }
+      // Always unmaximize to clear any tiled/maximized state
+      window.unmaximize();
 
       // Move window to center
       window.move_resize_frame(true, newX, newY, newWidth, newHeight);

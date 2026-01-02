@@ -29,10 +29,10 @@ export class StandardSizeCommand implements CommandImplementation {
         window.unmake_fullscreen();
       }
 
-      // Unmaximize if needed
-      if (window.is_maximized()) {
-        window.unmaximize();
-      }
+      // Always unmaximize before resizing to clear any tiled/maximized state
+      // GNOME's Super+Arrow tiling uses partial maximize, and is_maximized() might not detect it
+      // So we always call unmaximize() which is safe even if the window isn't maximized
+      window.unmaximize();
 
       // Move and resize
       window.move_resize_frame(true, newX, newY, newWidth, newHeight);
