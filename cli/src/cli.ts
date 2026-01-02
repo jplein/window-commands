@@ -33,7 +33,7 @@ async function executeCommand(command: Command): Promise<boolean> {
 function generateDesktopFile(command: Command, targetDir: string): void {
   mkdirSync(targetDir, { recursive: true });
 
-  const { name, icon } = command;
+  const { name, icon, description } = command;
 
   var iconLine = "";
   if (icon) {
@@ -46,7 +46,7 @@ function generateDesktopFile(command: Command, targetDir: string): void {
 
   let desktopContent = `[Desktop Entry]
 Type=Application
-Name=${name}
+Name=${description}
 Exec=node ${cliPath} ${name}
 Terminal=false
 Categories=Utility;
