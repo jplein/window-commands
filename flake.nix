@@ -88,8 +88,8 @@
 
             package = lib.mkOption {
               type = lib.types.package;
-              default = self.packages.${pkgs.system}.default;
-              defaultText = lib.literalExpression "inputs.window-commands.packages.\${pkgs.system}.default";
+              default = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+              defaultText = lib.literalExpression "inputs.window-commands.packages.\${pkgs.stdenv.hostPlatform.system}.default";
               description = "The window-commands package to use";
             };
           };
@@ -115,7 +115,7 @@
 
       # Overlay for adding the package to pkgs
       overlays.default = final: prev: {
-        window-commands = self.packages.${prev.system}.default;
+        window-commands = self.packages.${prev.stdenv.hostPlatform.system}.default;
       };
     };
 }
